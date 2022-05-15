@@ -1,3 +1,6 @@
+use raytracer::write::{write_image};
+
+
 fn main() {
-    println!("Hello, world!");
+    write_image(256, 256, "test.png")
 }
