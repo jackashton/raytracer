@@ -13,8 +13,16 @@ impl<N: Num + Copy> Vec3<N> {
         Vec3 { x, y, z }
     }
 
-    pub fn dot(v: &Vec3<N>, u: &Vec3<N>) -> N {
-        (v.x * u.x) + (v.y * u.y) + (v.z * u.z)
+    pub fn dot(u: &Vec3<N>, v: &Vec3<N>) -> N {
+        (u.x * v.x) + (u.y * v.y) + (u.z * v.z)
+    }
+
+    pub fn cross(u: &Vec3<N>, v: &Vec3<N>) -> Vec3<N> {
+        Vec3 {
+            x: (u.y * v.z) - (u.z * v.y),
+            y: (u.z * v.x) - (u.x * v.z),
+            z: (u.x * v.y) - (u.y * v.x),
+        }
     }
 }
 
@@ -163,9 +171,17 @@ fn test_unit_vector() {
 }
 
 #[test]
-fn test_dot_product() {
+fn test_dot() {
     let vec1: Vec3<f64> = Vec3::new(1.0, 3.0, 4.0);
     let vec2: Vec3<f64> = Vec3::new(2.0, 3.0, 5.0);
     let res: f64 = 31.0;
     assert_eq!(Vec3::dot(&vec1, &vec2), res);
+}
+
+#[test]
+fn test_cross() {
+    let vec1: Vec3<i32> = Vec3::new(1, 3, 4);
+    let vec2: Vec3<i32> = Vec3::new(2, 3, 5);
+    let res: Vec3<i32> = Vec3::new(3, 3, -3);
+    assert_eq!(Vec3::cross(&vec1, &vec2), res);
 }
