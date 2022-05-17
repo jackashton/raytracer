@@ -1,29 +1,29 @@
 use std::ops::{Add, Sub, Mul, Div};
 use num_traits::{Num};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Vec3<N: Num> {
     pub x: N,
     pub y: N,
     pub z: N,
 }
 
-impl<N: Num> Vec3<N> {
+impl<N: Num> Vec3<N> where N: Copy {
     pub fn new(x: N, y: N, z: N) -> Vec3<N> {
         Vec3 { x, y, z }
     }
 
-    // pub fn x(&self) -> N {
-    //     self.x
-    // }
-    //
-    // pub fn y(&self) -> N {
-    //     self.y
-    // }
-    //
-    // pub fn z(&self) -> N {
-    //     self.z
-    // }
+    pub fn x(&self) -> N {
+        self.x
+    }
+
+    pub fn y(&self) -> N {
+        self.y
+    }
+
+    pub fn z(&self) -> N {
+        self.z
+    }
 }
 
 impl<N: Num> Add for Vec3<N> {
