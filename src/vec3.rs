@@ -155,6 +155,10 @@ impl<T: Num + Copy + 'static> Vec3<T> {
     }
 }
 
+pub type Color = Vec3<u8>;
+
+pub type Point3<N> = Vec3<N>;
+
 #[cfg(test)]
 mod tests {
     use super::*;
