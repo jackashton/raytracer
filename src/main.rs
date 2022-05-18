@@ -1,6 +1,5 @@
+use raytracer::write::write_image;
 use std::env;
-use raytracer::write::{write_image};
-
 
 fn main() {
     let args: Vec<String> = env::args().collect();

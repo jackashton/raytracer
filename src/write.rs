@@ -1,13 +1,15 @@
-use image::{RgbImage, ImageBuffer, Rgb};
+use image::{ImageBuffer, Rgb, RgbImage};
 use indicatif::{ProgressBar, ProgressStyle};
 
 pub fn write_image(height: u32, width: u32, filename: &str) {
     let mut buffer: RgbImage = ImageBuffer::new(width, height);
 
     let bar = ProgressBar::new(height as u64);
-    bar.set_style(ProgressStyle::default_bar().template(
-        "[{elapsed} elapsed] {wide_bar} {percent}% [{eta} remaining] writing to file"
-    ));
+    bar.set_style(
+        ProgressStyle::default_bar().template(
+            "[{elapsed} elapsed] {wide_bar} {percent}% [{eta} remaining] writing to file",
+        ),
+    );
 
     let mut prev: u32 = 0;
     for (x, y, pixel) in buffer.enumerate_pixels_mut() {
