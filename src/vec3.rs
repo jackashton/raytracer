@@ -1,4 +1,4 @@
-use num_traits::{Float, Num};
+use num_traits::{AsPrimitive, Float, Num};
 use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Debug, Copy, Clone)]
@@ -135,6 +135,23 @@ impl<N: Num + Copy> Div<N> for Vec3<N> {
 impl<N: Num> PartialEq for Vec3<N> {
     fn eq(&self, other: &Self) -> bool {
         self.x == other.x && self.y == other.y && self.z == other.z
+    }
+}
+
+impl<N: Num> From<Vec3<N>> for [N; 3] {
+    fn from(v: Vec3<N>) -> [N; 3] {
+        let Vec3 { x, y, z } = v;
+        [x, y, z]
+    }
+}
+
+impl<T: Num + Copy + 'static> Vec3<T> {
+    pub fn from<U: AsPrimitive<T> + Num>(other: Vec3<U>) -> Vec3<T> {
+        Vec3 {
+            x: other.x.as_(),
+            y: other.y.as_(),
+            z: other.z.as_(),
+        }
     }
 }
 

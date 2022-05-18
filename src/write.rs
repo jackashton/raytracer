@@ -1,3 +1,4 @@
+use crate::vec3::Vec3;
 use image::{ImageBuffer, Rgb, RgbImage};
 use indicatif::{ProgressBar, ProgressStyle};
 
@@ -22,11 +23,8 @@ pub fn write_image(height: u32, width: u32, filename: &str) {
         let g = y as f64 / (height - 1) as f64;
         let b = 0.25;
 
-        let ir = (255.999 * r) as u8;
-        let ig = (255.999 * g) as u8;
-        let ib = (255.999 * b) as u8;
-
-        *pixel = Rgb([ir, ig, ib]);
+        let color = <Vec3<u8>>::from(Vec3::new(r, g, b) * 255.999);
+        *pixel = Rgb(<[u8; 3]>::from(color));
     }
 
     bar.finish();
