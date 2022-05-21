@@ -46,8 +46,7 @@ fn main() {
 
     let scene: Vec<Vec<Color>> = (0..image_width)
         .map(|i| {
-            bar.inc(1);
-            (0..image_height)
+            let col = (0..image_height)
                 .rev()
                 .map(|j| {
                     let u = i as f64 / (image_width as f64 - 1.0);
@@ -58,7 +57,9 @@ fn main() {
                     );
                     color(&r)
                 })
-                .collect()
+                .collect();
+            bar.inc(1);
+            col
         })
         .collect();
 
