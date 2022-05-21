@@ -4,7 +4,20 @@ use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
 
+fn hit_sphere(center: &Point3<f64>, radius: f64, r: &Ray<f64>) -> bool {
+    let oc = r.orig - *center;
+    let a = Vec3::dot(&r.dir, &r.dir);
+    let b = 2.0 * Vec3::dot(&oc, &r.dir);
+    let c = Vec3::dot(&oc, &oc) - radius * radius;
+    let discriminant = b * b - 4.0 * a * c;
+    discriminant > 0.0
+}
+
 fn color(r: &Ray<f64>) -> Color {
+    if hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, &r) {
+        return Color::new(255, 0, 0);
+    }
+
     let unit_direction = Vec3::unit_vector(r.dir);
     let t = 0.5 * (unit_direction.y + 1.0);
     let v = (Vec3::new(1.0, 1.0, 1.0) * (1.0 - t)) + (Vec3::new(0.5, 0.7, 1.0) * t);
