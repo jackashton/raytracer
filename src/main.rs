@@ -7,13 +7,13 @@ use std::env;
 fn hit_sphere(center: &Point3<f64>, radius: f64, r: &Ray<f64>) -> f64 {
     let oc = r.orig - *center;
     let a = Vec3::dot(&r.dir, &r.dir);
-    let b = 2.0 * Vec3::dot(&oc, &r.dir);
-    let c = Vec3::dot(&oc, &oc) - radius * radius;
-    let discriminant = b * b - 4.0 * a * c;
+    let h = Vec3::dot(&oc, &r.dir);
+    let c = oc.length() * oc.length() - radius * radius;
+    let discriminant = h * h - a * c;
     if discriminant < 0.0 {
         return -1.0;
     }
-    (-b - discriminant.sqrt()) / (2.0 * a)
+    (-h - discriminant.sqrt()) / a
 }
 
 fn color(r: &Ray<f64>) -> Color {
