@@ -1,3 +1,4 @@
+use indicatif::{ProgressBar, ProgressStyle};
 use raytracer::ray::Ray;
 use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
@@ -37,8 +38,15 @@ fn main() {
         origin - (horizontal / 2.0) - (vertical / 2.0) - Vec3::new(0.0, 0.0, focal_length);
 
     // Render
+    let bar = ProgressBar::new(image_width as u64);
+    bar.set_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed} elapsed] {wide_bar} {percent}% [{eta} remaining] rendering"),
+    );
+
     let scene: Vec<Vec<Color>> = (0..image_width)
         .map(|i| {
+            bar.inc(1);
             (0..image_height)
                 .rev()
                 .map(|j| {
@@ -53,6 +61,8 @@ fn main() {
                 .collect()
         })
         .collect();
+
+    bar.finish();
 
     write_image(scene, filename)
 }
