@@ -1,5 +1,5 @@
 use num_traits::{AsPrimitive, Float, Num};
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3<N: Num> {
@@ -151,6 +151,18 @@ impl<T: Num + Copy + 'static> Vec3<T> {
             x: other.x.as_(),
             y: other.y.as_(),
             z: other.z.as_(),
+        }
+    }
+}
+
+impl<N: Float> Neg for Vec3<N> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Vec3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
         }
     }
 }

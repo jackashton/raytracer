@@ -38,7 +38,11 @@ impl<N: Float> Hittable<N> for Sphere<N> {
 
         rec.t = root;
         rec.p = r.at(rec.t);
+        // normal always points against the incident ray
         rec.normal = (rec.p - self.center) / self.radius;
+        if Vec3::dot(&r.dir, &rec.normal).is_sign_positive() {
+            rec.normal = -rec.normal;
+        }
         true
     }
 }
