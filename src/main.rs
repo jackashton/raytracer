@@ -1,26 +1,15 @@
 use indicatif::{ProgressBar, ProgressStyle};
+use raytracer::objects::hittable::{HitRecord, Hittable, HittableList};
+use raytracer::objects::sphere::Sphere;
 use raytracer::ray::Ray;
 use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
 
-fn hit_sphere(center: &Point3<f64>, radius: f64, r: &Ray<f64>) -> f64 {
-    let oc = r.orig - *center;
-    let a = Vec3::dot(&r.dir, &r.dir);
-    let h = Vec3::dot(&oc, &r.dir);
-    let c = oc.length() * oc.length() - radius * radius;
-    let discriminant = h * h - a * c;
-    if discriminant < 0.0 {
-        return -1.0;
-    }
-    (-h - discriminant.sqrt()) / a
-}
-
-fn color(r: &Ray<f64>) -> Color {
-    let t = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, &r);
-    if t > 0.0 {
-        let n = Vec3::unit_vector(r.at(t) - Vec3::new(0.0, 0.0, -1.0));
-        return <Color>::from(Vec3::new(n.x + 1.0, n.y + 1.0, n.z + 1.0) * 0.5 * 255.999);
+fn color(r: &Ray<f64>, world: &HittableList<Sphere<f64>>) -> Color {
+    let mut rec: HitRecord<f64> = HitRecord::new();
+    if world.hit(r, 0.0, f64::INFINITY, &mut rec) {
+        return <Color>::from((rec.normal + Vec3::new(1.0, 1.0, 1.0)) * 0.5 * 255.999);
     }
 
     let unit_direction = Vec3::unit_vector(r.dir);
@@ -43,6 +32,11 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: u32 = 400;
     let image_height: u32 = (image_width as f64 / aspect_ratio) as u32;
+
+    // World
+    let mut world = HittableList::new();
+    world.add(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5));
+    world.add(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0));
 
     // Camera
     let viewport_height = 2.0;
@@ -73,7 +67,7 @@ fn main() {
                         origin,
                         lower_left_corner + (horizontal * u) + (vertical * v) - origin,
                     );
-                    color(&r)
+                    color(&r, &world)
                 })
                 .collect();
             bar.inc(1);
