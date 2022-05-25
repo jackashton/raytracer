@@ -25,19 +25,20 @@ pub trait Hittable<N: Num> {
     fn hit(&self, r: &Ray<N>, t_min: N, t_max: N, rec: &mut HitRecord<N>) -> bool;
 }
 
-pub struct HittableList<T: Hittable<f64>> {
-    pub objects: Vec<T>,
+pub struct HittableList<T: Hittable<f64> + 'static> {
+    pub objects: Vec<Box<T>>,
 }
 
-impl<T: Hittable<f64>> HittableList<T> {
-    pub fn new() -> HittableList<T> {
-        HittableList {
+impl<T: Hittable<f64> + 'static> HittableList<T> {
+    pub fn new() -> Self {
+        Self {
             objects: Vec::new(),
         }
     }
 
-    pub fn add(&mut self, object: T) {
-        self.objects.push(object);
+    pub fn push(&mut self, object: T) -> &mut Self {
+        self.objects.push(Box::new(object));
+        self
     }
 
     pub fn size(&self) -> usize {
