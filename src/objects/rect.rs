@@ -15,7 +15,6 @@ impl<N: Num> Rect<N> {
 }
 
 impl Hittable<f64> for Rect<f64> {
-    #[allow(unused_variables)]
     fn hit(&self, r: &Ray<f64>, t_min: f64, t_max: f64, rec: &mut HitRecord<f64>) -> bool {
         let dirfra = Vec3::new(1.0 / r.dir.x, 1.0 / r.dir.y, 1.0 / r.dir.z);
 
@@ -28,11 +27,11 @@ impl Hittable<f64> for Rect<f64> {
 
         let t_min = f64::max(
             f64::max(f64::min(t1, t2), f64::min(t3, t4)),
-            f64::min(t5, t6),
+            f64::max(f64::min(t5, t6), t_min),
         );
         let t_max = f64::min(
             f64::min(f64::max(t1, t2), f64::max(t3, t4)),
-            f64::max(t5, t6),
+            f64::min(f64::max(t5, t6), t_max),
         );
 
         // if tmax < 0, ray is intersecting AABB, but the whole AABB is behind us
