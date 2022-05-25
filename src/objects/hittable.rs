@@ -25,19 +25,20 @@ pub trait Hittable<N: Num> {
     fn hit(&self, r: &Ray<N>, t_min: N, t_max: N, rec: &mut HitRecord<N>) -> bool;
 }
 
-pub struct HittableList<T: Hittable<f64>> {
-    pub objects: Vec<T>,
+pub struct HittableList<T: ?Sized + Hittable<f64>> {
+    pub objects: Vec<Box<T>>,
 }
 
-impl<T: Hittable<f64>> HittableList<T> {
-    pub fn new() -> HittableList<T> {
-        HittableList {
+impl<T: ?Sized + Hittable<f64>> HittableList<T> {
+    pub fn new() -> Self {
+        Self {
             objects: Vec::new(),
         }
     }
 
-    pub fn add(&mut self, object: T) {
+    pub fn push(&mut self, object: Box<T>) -> &mut Self {
         self.objects.push(object);
+        self
     }
 
     pub fn size(&self) -> usize {
@@ -45,7 +46,7 @@ impl<T: Hittable<f64>> HittableList<T> {
     }
 }
 
-impl<T: Hittable<f64>> Hittable<f64> for HittableList<T> {
+impl<T: ?Sized + Hittable<f64>> Hittable<f64> for HittableList<T> {
     fn hit(&self, r: &Ray<f64>, t_min: f64, t_max: f64, rec: &mut HitRecord<f64>) -> bool {
         let mut temp = HitRecord::new();
         let mut hit = false;
