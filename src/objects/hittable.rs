@@ -25,19 +25,19 @@ pub trait Hittable<N: Num> {
     fn hit(&self, r: &Ray<N>, t_min: N, t_max: N, rec: &mut HitRecord<N>) -> bool;
 }
 
-pub struct HittableList<T: Hittable<f64> + 'static> {
-    pub objects: Vec<Box<T>>,
+pub struct HittableList {
+    pub objects: Vec<Box<dyn Hittable<f64>>>,
 }
 
-impl<T: Hittable<f64> + 'static> HittableList<T> {
+impl HittableList {
     pub fn new() -> Self {
         Self {
             objects: Vec::new(),
         }
     }
 
-    pub fn push(&mut self, object: T) -> &mut Self {
-        self.objects.push(Box::new(object));
+    pub fn push(&mut self, object: Box<dyn Hittable<f64>>) -> &mut Self {
+        self.objects.push(object);
         self
     }
 
@@ -46,7 +46,7 @@ impl<T: Hittable<f64> + 'static> HittableList<T> {
     }
 }
 
-impl<T: Hittable<f64>> Hittable<f64> for HittableList<T> {
+impl Hittable<f64> for HittableList {
     fn hit(&self, r: &Ray<f64>, t_min: f64, t_max: f64, rec: &mut HitRecord<f64>) -> bool {
         let mut temp = HitRecord::new();
         let mut hit = false;

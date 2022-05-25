@@ -1,7 +1,7 @@
 use crate::objects::hittable::{HitRecord, Hittable};
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
-use num_traits::{Float, Num, One};
+use num_traits::Num;
 
 pub struct Rect<N: Num> {
     a: Point3<N>,
@@ -15,6 +15,7 @@ impl<N: Num> Rect<N> {
 }
 
 impl Hittable<f64> for Rect<f64> {
+    #[allow(unused_variables)]
     fn hit(&self, r: &Ray<f64>, t_min: f64, t_max: f64, rec: &mut HitRecord<f64>) -> bool {
         let dirfra = Vec3::new(1.0 / r.dir.x, 1.0 / r.dir.y, 1.0 / r.dir.z);
 
