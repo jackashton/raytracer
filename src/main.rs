@@ -37,8 +37,8 @@ fn main() {
     let mut world: HittableList<dyn Hittable<f64>> = HittableList::new();
     world.push(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
     world.push(Box::new(Rect::new(
-        Point3::new(-100.0, -100.5, -1.0),
-        Point3::new(100.0, 0.1, -1.0),
+        Point3::new(-0.25, -0.25, -0.55),
+        Point3::new(0.25, 0.25, -0.54),
     )));
     // world.push(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
 
