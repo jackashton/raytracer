@@ -19,46 +19,24 @@ impl Hittable<f64> for Rect<f64> {
         let mut t_min = t_min;
         let mut t_max = t_max;
 
-        let t0 = f64::min(
-            (self.a.x - r.orig.x) / r.dir.x,
-            (self.b.x - r.orig.x) / r.dir.x,
-        );
-        let t1 = f64::max(
-            (self.a.x - r.orig.x) / r.dir.x,
-            (self.b.x - r.orig.x) / r.dir.x,
-        );
-        t_min = f64::max(t0, t_min);
-        t_max = f64::min(t1, t_max);
-        if t_max <= t_min {
-            return false;
-        }
+        let inv_d = <[f64; 3]>::from(Vec3::new(1.0 / r.dir.x, 1.0 / r.dir.y, 1.0 / r.dir.z));
+        let va = <[f64; 3]>::from(self.a);
+        let vb = <[f64; 3]>::from(self.b);
+        let o = <[f64; 3]>::from(r.orig);
+        let mut t0: f64;
+        let mut t1: f64;
 
-        let t2 = f64::min(
-            (self.a.y - r.orig.y) / r.dir.y,
-            (self.b.y - r.orig.y) / r.dir.y,
-        );
-        let t3 = f64::max(
-            (self.a.y - r.orig.y) / r.dir.y,
-            (self.b.y - r.orig.y) / r.dir.y,
-        );
-        t_min = f64::max(t2, t_min);
-        t_max = f64::min(t3, t_max);
-        if t_max <= t_min {
-            return false;
-        }
-
-        let t4 = f64::min(
-            (self.a.z - r.orig.z) / r.dir.z,
-            (self.b.z - r.orig.z) / r.dir.z,
-        );
-        let t5 = f64::max(
-            (self.a.z - r.orig.z) / r.dir.z,
-            (self.b.z - r.orig.z) / r.dir.z,
-        );
-        t_min = f64::max(t4, t_min);
-        t_max = f64::min(t5, t_max);
-        if t_max <= t_min {
-            return false;
+        for i in 0..3 {
+            t0 = (va[i] - o[i]) * inv_d[i];
+            t1 = (vb[i] - o[i]) * inv_d[i];
+            if inv_d[i] < 0.0 {
+                (t0, t1) = (t1, t0)
+            }
+            t_min = f64::max(t0, t_min);
+            t_max = f64::min(t1, t_max);
+            if t_max <= t_min {
+                return false;
+            }
         }
 
         rec.t = t_min;
