@@ -48,3 +48,21 @@ impl Hittable<f64> for Rect<f64> {
         true
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hit() {
+        let center = Point3::new(0.0, 0.0, -1.0);
+        let rect = Rect::new(
+            center - Point3::new(0.5, 0.5, 0.1),
+            center + Point3::new(0.5, 0.5, 0.0),
+        );
+        let origin = Point3::new(0.0, 0.0, 0.0);
+        let ray = Ray::new(origin, center);
+        let mut rec: HitRecord<f64> = HitRecord::new();
+        assert!(rect.hit(&ray, 0.0, f64::INFINITY, &mut rec))
+    }
+}

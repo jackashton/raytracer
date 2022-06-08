@@ -46,3 +46,18 @@ impl<N: Float> Hittable<N> for Sphere<N> {
         true
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hit() {
+        let center = Point3::new(0.0, 0.0, -1.0);
+        let sphere = Sphere::new(center, 0.5);
+        let origin = Point3::new(0.0, 0.0, 0.0);
+        let ray = Ray::new(origin, center);
+        let mut rec: HitRecord<f64> = HitRecord::new();
+        assert!(sphere.hit(&ray, 0.0, f64::INFINITY, &mut rec))
+    }
+}

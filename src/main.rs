@@ -1,6 +1,6 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use raytracer::objects::hittable::{HitRecord, Hittable, HittableList};
-use raytracer::objects::{Rect, Sphere};
+use raytracer::objects::Sphere;
 use raytracer::ray::Ray;
 use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
@@ -36,11 +36,7 @@ fn main() {
     // World
     let mut world: HittableList<dyn Hittable<f64>> = HittableList::new();
     world.push(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
-    world.push(Box::new(Rect::new(
-        Point3::new(-0.25, -0.25, -0.55),
-        Point3::new(0.25, 0.25, -0.54),
-    )));
-    // world.push(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+    world.push(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
 
     // Camera
     let viewport_height = 2.0;
