@@ -1,6 +1,6 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use raytracer::objects::hittable::{HitRecord, Hittable, HittableList};
-use raytracer::objects::Sphere;
+use raytracer::objects::{Camera, Sphere};
 use raytracer::ray::Ray;
 use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
@@ -39,15 +39,7 @@ fn main() {
     world.push(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
 
     // Camera
-    let viewport_height = 2.0;
-    let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;
-
-    let origin: Point3<f64> = Point3::new(0.0, 0.0, 0.0);
-    let horizontal: Vec3<f64> = Vec3::new(viewport_width, 0.0, 0.0);
-    let vertical: Vec3<f64> = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner =
-        origin - (horizontal / 2.0) - (vertical / 2.0) - Vec3::new(0.0, 0.0, focal_length);
+    let cam = Camera::new();
 
     // Render
     let bar = ProgressBar::new(image_width as u64);
@@ -63,10 +55,7 @@ fn main() {
                 .map(|j| {
                     let u = i as f64 / (image_width as f64 - 1.0);
                     let v = j as f64 / (image_height as f64 - 1.0);
-                    let r = Ray::new(
-                        origin,
-                        lower_left_corner + (horizontal * u) + (vertical * v) - origin,
-                    );
+                    let r = cam.get_ray(u, v);
                     color(&r, &world)
                 })
                 .collect();
