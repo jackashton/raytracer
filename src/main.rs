@@ -20,8 +20,18 @@ fn color(r: &Ray, world: &HittableList<dyn Hittable>) -> Vec3<f64> {
 }
 
 fn main() {
+    // env vars
     dotenv().ok();
+    let is_antialiasing_enabled = env::var("ANTIALIASING_ENABLED")
+        .unwrap()
+        .parse::<bool>()
+        .unwrap();
+    let antialiasing_samples_per_pixel = env::var("ANTIALIASING_SAMPLES_PER_PIXEL")
+        .unwrap()
+        .parse::<u32>()
+        .unwrap();
 
+    // args
     let args: Vec<String> = env::args().collect();
 
     if args.len() != 2 {
@@ -35,15 +45,8 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: u32 = 400;
     let image_height: u32 = (image_width as f64 / aspect_ratio) as u32;
-    let is_antialiasing_enabled = env::var("ANTIALIASING_ENABLED")
-        .unwrap()
-        .parse::<bool>()
-        .unwrap();
     let samples_per_pixel = if is_antialiasing_enabled {
-        env::var("ANTIALIASING_SAMPLES_PER_PIXEL")
-            .unwrap()
-            .parse::<u32>()
-            .unwrap()
+        antialiasing_samples_per_pixel
     } else {
         1
     };
