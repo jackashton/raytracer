@@ -76,15 +76,10 @@ fn main() {
                 .map(|j| {
                     let mut pixel_color = Vec3::new(0.0, 0.0, 0.0);
                     for _s in 0..samples_per_pixel {
-                        let u_ran = if is_antialiasing_enabled {
-                            rng.gen()
+                        let (u_ran, v_ran) = if is_antialiasing_enabled {
+                            (rng.gen(), rng.gen())
                         } else {
-                            0.0
-                        };
-                        let v_ran = if is_antialiasing_enabled {
-                            rng.gen()
-                        } else {
-                            0.0
+                            (0.0, 0.0)
                         };
                         let u = ((i as f64) + u_ran) / (image_width as f64 - 1.0);
                         let v = ((j as f64) + v_ran) / (image_height as f64 - 1.0);
