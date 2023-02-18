@@ -1,7 +1,6 @@
 use crate::objects::hittable::{HitRecord, Hittable};
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
-use num_traits::Num;
 
 pub struct Rect {
     a: Point3<f64>,

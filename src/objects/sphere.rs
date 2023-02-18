@@ -1,7 +1,6 @@
 use crate::objects::hittable::{HitRecord, Hittable};
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
-use num_traits::{Float, Num};
 
 pub struct Sphere {
     center: Point3<f64>,
@@ -14,14 +13,14 @@ impl Sphere {
     }
 }
 
-impl<N: Float> Hittable for Sphere {
-    fn hit(&self, r: &Ray, t_min: N, t_max: N, rec: &mut HitRecord) -> bool {
-        let oc: Point3<N> = r.orig - self.center;
-        let a: N = r.dir.length() * r.dir.length();
+impl Hittable for Sphere {
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+        let oc = r.orig - self.center;
+        let a = r.dir.length() * r.dir.length();
         let h = Vec3::dot(&oc, &r.dir);
-        let c: N = oc.length() * oc.length() - self.radius * self.radius;
+        let c = oc.length() * oc.length() - self.radius * self.radius;
 
-        let discriminant: N = h * h - a * c;
+        let discriminant = h * h - a * c;
         if discriminant.is_sign_negative() {
             return false;
         }

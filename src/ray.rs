@@ -1,5 +1,4 @@
 use crate::vec3::{Point3, Vec3};
-use num_traits::Num;
 
 pub struct Ray {
     pub orig: Point3<f64>,

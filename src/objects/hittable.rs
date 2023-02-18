@@ -1,15 +1,14 @@
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
-use num_traits::{Num, Zero};
 
 #[derive(Debug, Copy, Clone)]
 pub struct HitRecord {
     pub p: Point3<f64>,
     pub normal: Vec3<f64>,
-    pub t: N,
+    pub t: f64,
 }
 
-impl<N: Num + Copy> HitRecord {
+impl HitRecord {
     pub fn new() -> HitRecord {
         let v = Vec3::new(0.0, 0.0, 0.0);
         HitRecord {
