@@ -1,3 +1,4 @@
+use dotenv::dotenv;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
 use raytracer::objects::hittable::{HitRecord, Hittable, HittableList};
@@ -19,6 +20,8 @@ fn color(r: &Ray, world: &HittableList<dyn Hittable>) -> Vec3<f64> {
 }
 
 fn main() {
+    dotenv().ok();
+
     let args: Vec<String> = env::args().collect();
 
     if args.len() != 2 {
@@ -32,7 +35,18 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: u32 = 400;
     let image_height: u32 = (image_width as f64 / aspect_ratio) as u32;
-    let samples_per_pixel: u32 = 100;
+    let is_antialiasing_enabled = env::var("ANTIALIASING_ENABLED")
+        .unwrap()
+        .parse::<bool>()
+        .unwrap();
+    let samples_per_pixel = if is_antialiasing_enabled {
+        env::var("ANTIALIASING_SAMPLES_PER_PIXEL")
+            .unwrap()
+            .parse::<u32>()
+            .unwrap()
+    } else {
+        1
+    };
 
     // World
     let mut world: HittableList<dyn Hittable> = HittableList::new();
@@ -59,8 +73,16 @@ fn main() {
                 .map(|j| {
                     let mut pixel_color = Vec3::new(0.0, 0.0, 0.0);
                     for _s in 0..samples_per_pixel {
-                        let u_ran: f64 = rng.gen();
-                        let v_ran: f64 = rng.gen();
+                        let u_ran = if is_antialiasing_enabled {
+                            rng.gen()
+                        } else {
+                            0.0
+                        };
+                        let v_ran = if is_antialiasing_enabled {
+                            rng.gen()
+                        } else {
+                            0.0
+                        };
                         let u = ((i as f64) + u_ran) / (image_width as f64 - 1.0);
                         let v = ((j as f64) + v_ran) / (image_height as f64 - 1.0);
                         let r = cam.get_ray(u, v);
