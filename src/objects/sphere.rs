@@ -3,19 +3,19 @@ use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
 use num_traits::{Float, Num};
 
-pub struct Sphere<N: Num> {
-    center: Point3<N>,
-    radius: N,
+pub struct Sphere {
+    center: Point3<f64>,
+    radius: f64,
 }
 
-impl<N: Num> Sphere<N> {
-    pub fn new(center: Point3<N>, radius: N) -> Sphere<N> {
+impl Sphere {
+    pub fn new(center: Point3<f64>, radius: f64) -> Sphere {
         Sphere { center, radius }
     }
 }
 
-impl<N: Float> Hittable<N> for Sphere<N> {
-    fn hit(&self, r: &Ray<N>, t_min: N, t_max: N, rec: &mut HitRecord<N>) -> bool {
+impl<N: Float> Hittable for Sphere {
+    fn hit(&self, r: &Ray, t_min: N, t_max: N, rec: &mut HitRecord) -> bool {
         let oc: Point3<N> = r.orig - self.center;
         let a: N = r.dir.length() * r.dir.length();
         let h = Vec3::dot(&oc, &r.dir);
@@ -57,7 +57,7 @@ mod tests {
         let sphere = Sphere::new(center, 0.5);
         let origin = Point3::new(0.0, 0.0, 0.0);
         let ray = Ray::new(origin, center);
-        let mut rec: HitRecord<f64> = HitRecord::new();
+        let mut rec: HitRecord = HitRecord::new();
         assert!(sphere.hit(&ray, 0.0, f64::INFINITY, &mut rec))
     }
 }
