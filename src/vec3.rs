@@ -1,5 +1,6 @@
+use crate::utils::clamp;
 use num_traits::{AsPrimitive, Float, Num};
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3<N: Num> {
@@ -23,6 +24,15 @@ impl<N: Num + Copy> Vec3<N> {
             y: (u.z * v.x) - (u.x * v.z),
             z: (u.x * v.y) - (u.y * v.x),
         }
+    }
+}
+
+impl<N: Num + Copy + PartialOrd> Vec3<N> {
+    pub fn clamp(&mut self, min: N, max: N) -> Vec3<N> {
+        self.x = clamp(self.x, min, max);
+        self.y = clamp(self.y, min, max);
+        self.z = clamp(self.z, min, max);
+        *self
     }
 }
 
@@ -56,6 +66,16 @@ impl<N: Num + Copy> Add<N> for Vec3<N> {
             x: self.x + rhs,
             y: self.y + rhs,
             z: self.z + rhs,
+        }
+    }
+}
+
+impl<N: Num + Copy> AddAssign for Vec3<N> {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = Self {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
         }
     }
 }
@@ -101,6 +121,26 @@ impl<N: Num + Copy> Mul<N> for Vec3<N> {
 
     fn mul(self, rhs: N) -> Self::Output {
         Self {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+        }
+    }
+}
+
+impl<N: Num + Copy> MulAssign<Vec3<N>> for Vec3<N> {
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = Self {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+            z: self.z * rhs.z,
+        }
+    }
+}
+
+impl<N: Num + Copy> MulAssign<N> for Vec3<N> {
+    fn mul_assign(&mut self, rhs: N) {
+        *self = Self {
             x: self.x * rhs,
             y: self.y * rhs,
             z: self.z * rhs,

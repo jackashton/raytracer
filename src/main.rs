@@ -1,4 +1,5 @@
 use indicatif::{ProgressBar, ProgressStyle};
+use rand::Rng;
 use raytracer::objects::hittable::{HitRecord, Hittable, HittableList};
 use raytracer::objects::{Camera, Sphere};
 use raytracer::ray::Ray;
@@ -6,16 +7,15 @@ use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
 
-fn color(r: &Ray, world: &HittableList<dyn Hittable>) -> Color {
+fn color(r: &Ray, world: &HittableList<dyn Hittable>) -> Vec3<f64> {
     let mut rec: HitRecord = HitRecord::new();
     if world.hit(r, 0.0, f64::INFINITY, &mut rec) {
-        return <Color>::from((rec.normal + Vec3::new(1.0, 1.0, 1.0)) * 0.5 * 255.999);
+        return (rec.normal + Vec3::new(1.0, 1.0, 1.0)) * 0.5;
     }
 
     let unit_direction = Vec3::unit_vector(r.dir);
     let t = 0.5 * (unit_direction.y + 1.0);
-    let v = (Vec3::new(1.0, 1.0, 1.0) * (1.0 - t)) + (Vec3::new(0.5, 0.7, 1.0) * t);
-    <Color>::from(v * 255.999)
+    Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + (Vec3::new(0.5, 0.7, 1.0) * t)
 }
 
 fn main() {
@@ -32,6 +32,7 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: u32 = 400;
     let image_height: u32 = (image_width as f64 / aspect_ratio) as u32;
+    let samples_per_pixel: u32 = 100;
 
     // World
     let mut world: HittableList<dyn Hittable> = HittableList::new();
@@ -40,6 +41,9 @@ fn main() {
 
     // Camera
     let cam = Camera::new();
+
+    // Misc
+    let mut rng = rand::thread_rng();
 
     // Render
     let bar = ProgressBar::new(image_width as u64);
@@ -53,10 +57,18 @@ fn main() {
             let col = (0..image_height)
                 .rev()
                 .map(|j| {
-                    let u = i as f64 / (image_width as f64 - 1.0);
-                    let v = j as f64 / (image_height as f64 - 1.0);
-                    let r = cam.get_ray(u, v);
-                    color(&r, &world)
+                    let mut pixel_color = Vec3::new(0.0, 0.0, 0.0);
+                    for _s in 0..samples_per_pixel {
+                        let u_ran: f64 = rng.gen();
+                        let v_ran: f64 = rng.gen();
+                        let u = ((i as f64) + u_ran) / (image_width as f64 - 1.0);
+                        let v = ((j as f64) + v_ran) / (image_height as f64 - 1.0);
+                        let r = cam.get_ray(u, v);
+                        pixel_color += color(&r, &world);
+                    }
+                    let scale = 1.0 / (samples_per_pixel as f64);
+                    pixel_color *= scale;
+                    Color::from(pixel_color.clamp(0.0, 0.999) * 256.0)
                 })
                 .collect();
             bar.inc(1);
