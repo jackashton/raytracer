@@ -1,16 +1,15 @@
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
-use num_traits::Num;
 
-pub struct Camera<N: Num> {
-    origin: Point3<N>,
-    horizontal: Vec3<N>,
-    vertical: Vec3<N>,
-    lower_left_corner: Point3<N>,
+pub struct Camera {
+    origin: Point3<f64>,
+    horizontal: Vec3<f64>,
+    vertical: Vec3<f64>,
+    lower_left_corner: Point3<f64>,
 }
 
-impl Camera<f64> {
-    pub fn new() -> Camera<f64> {
+impl Camera {
+    pub fn new() -> Camera {
         let aspect_ratio = 16.0 / 9.0;
         let viewport_height = 2.0;
         let viewport_width = aspect_ratio * viewport_height;
@@ -30,7 +29,7 @@ impl Camera<f64> {
         }
     }
 
-    pub fn get_ray(&self, u: f64, v: f64) -> Ray<f64> {
+    pub fn get_ray(&self, u: f64, v: f64) -> Ray {
         Ray::new(
             self.origin,
             self.lower_left_corner + (self.horizontal * u) + (self.vertical * v) - self.origin,

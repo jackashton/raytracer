@@ -1,21 +1,20 @@
 use crate::objects::hittable::{HitRecord, Hittable};
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
-use num_traits::Num;
 
-pub struct Rect<N: Num> {
-    a: Point3<N>,
-    b: Point3<N>,
+pub struct Rect {
+    a: Point3<f64>,
+    b: Point3<f64>,
 }
 
-impl<N: Num> Rect<N> {
-    pub fn new(a: Point3<N>, b: Point3<N>) -> Rect<N> {
+impl Rect {
+    pub fn new(a: Point3<f64>, b: Point3<f64>) -> Rect {
         Rect { a, b }
     }
 }
 
-impl Hittable<f64> for Rect<f64> {
-    fn hit(&self, r: &Ray<f64>, t_min: f64, t_max: f64, rec: &mut HitRecord<f64>) -> bool {
+impl Hittable for Rect {
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         let mut t_min = t_min;
         let mut t_max = t_max;
 
@@ -62,7 +61,7 @@ mod tests {
         );
         let origin = Point3::new(0.0, 0.0, 0.0);
         let ray = Ray::new(origin, center);
-        let mut rec: HitRecord<f64> = HitRecord::new();
+        let mut rec = HitRecord::new();
         assert!(rect.hit(&ray, 0.0, f64::INFINITY, &mut rec))
     }
 }

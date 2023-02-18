@@ -6,8 +6,8 @@ use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
 
-fn color(r: &Ray<f64>, world: &HittableList<dyn Hittable<f64>>) -> Color {
-    let mut rec: HitRecord<f64> = HitRecord::new();
+fn color(r: &Ray, world: &HittableList<dyn Hittable>) -> Color {
+    let mut rec: HitRecord = HitRecord::new();
     if world.hit(r, 0.0, f64::INFINITY, &mut rec) {
         return <Color>::from((rec.normal + Vec3::new(1.0, 1.0, 1.0)) * 0.5 * 255.999);
     }
@@ -34,7 +34,7 @@ fn main() {
     let image_height: u32 = (image_width as f64 / aspect_ratio) as u32;
 
     // World
-    let mut world: HittableList<dyn Hittable<f64>> = HittableList::new();
+    let mut world: HittableList<dyn Hittable> = HittableList::new();
     world.push(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
     world.push(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
 
