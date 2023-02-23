@@ -4,14 +4,22 @@ use rand::Rng;
 use raytracer::objects::hittable::{HitRecord, Hittable, HittableList};
 use raytracer::objects::{Camera, Sphere};
 use raytracer::ray::Ray;
+use raytracer::vec3::utils::random_in_unit_sphere;
 use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
 
-fn color(r: &Ray, world: &HittableList<dyn Hittable>) -> Vec3<f64> {
+fn color(r: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
     let mut rec: HitRecord = HitRecord::new();
+
+    // stop when we exceed the max ray bounce limit
+    if depth <= 0 {
+        return Vec3::new(0.0, 0.0, 0.0);
+    }
+
     if world.hit(r, 0.0, f64::INFINITY, &mut rec) {
-        return (rec.normal + Vec3::new(1.0, 1.0, 1.0)) * 0.5;
+        let target = rec.p + rec.normal + random_in_unit_sphere();
+        return color(&Ray::new(rec.p, target - rec.p), world, depth - 1) * 0.5;
     }
 
     let unit_direction = Vec3::unit_vector(r.dir);
@@ -30,6 +38,7 @@ fn main() {
         .unwrap()
         .parse::<u32>()
         .unwrap();
+    let max_depth = env::var("MAX_DEPTH").unwrap().parse::<u32>().unwrap();
 
     // args
     let args: Vec<String> = env::args().collect();
@@ -84,7 +93,7 @@ fn main() {
                         let u = ((i as f64) + u_ran) / (image_width as f64 - 1.0);
                         let v = ((j as f64) + v_ran) / (image_height as f64 - 1.0);
                         let r = cam.get_ray(u, v);
-                        pixel_color += color(&r, &world);
+                        pixel_color += color(&r, &world, max_depth);
                     }
                     let scale = 1.0 / (samples_per_pixel as f64);
                     pixel_color *= scale;

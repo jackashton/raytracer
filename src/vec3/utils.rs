@@ -3,14 +3,13 @@ use rand::Rng;
 
 pub fn random_in_unit_sphere() -> Point3<f64> {
     let mut rng = rand::thread_rng();
-    let (u, x, y, z): (f64, f64, f64, f64) = (
-        rng.gen(),
+    let u: f64 = rng.gen();
+    let p = Point3::new(
         rng.gen_range(-1.0..1.0),
         rng.gen_range(-1.0..1.0),
         rng.gen_range(-1.0..1.0),
     );
-    let mag = (x * x + y * y + z * z).sqrt();
-    (Point3::new(x, y, z) * u.cbrt()) / mag
+    Point3::unit_vector(p) * u.cbrt()
 }
 
 #[cfg(test)]
