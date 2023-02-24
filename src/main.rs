@@ -17,7 +17,8 @@ fn color(r: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
         return Vec3::new(0.0, 0.0, 0.0);
     }
 
-    if world.hit(r, 0.0, f64::INFINITY, &mut rec) {
+    // t_min 0.001 to ignore hits very near to 0 to avoid shadow acne
+    if world.hit(r, 0.001, f64::INFINITY, &mut rec) {
         let target = rec.p + rec.normal + random_in_unit_sphere();
         return color(&Ray::new(rec.p, target - rec.p), world, depth - 1) * 0.5;
     }
@@ -95,9 +96,9 @@ fn main() {
                         let r = cam.get_ray(u, v);
                         pixel_color += color(&r, &world, max_depth);
                     }
+                    // divide color by number of samples per pixel and gamma correct for gamma 2
                     let scale = 1.0 / (samples_per_pixel as f64);
-                    pixel_color *= scale;
-                    Color::from(pixel_color.clamp(0.0, 0.999) * 256.0)
+                    Color::from((pixel_color * scale).sqrt().clamp(0.0, 0.999) * 256.0)
                 })
                 .collect();
             bar.inc(1);

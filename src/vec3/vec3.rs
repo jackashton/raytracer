@@ -44,6 +44,14 @@ impl<N: Float> Vec3<N> {
     pub fn unit_vector(v: Vec3<N>) -> Vec3<N> {
         v / v.length()
     }
+
+    pub fn sqrt(&self) -> Vec3<N> {
+        Vec3 {
+            x: self.x.sqrt(),
+            y: self.y.sqrt(),
+            z: self.z.sqrt(),
+        }
+    }
 }
 
 impl<N: Num> Add for Vec3<N> {
