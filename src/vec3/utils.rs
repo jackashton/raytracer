@@ -1,4 +1,4 @@
-use crate::vec3::Point3;
+use crate::vec3::{Point3, Vec3};
 use rand::Rng;
 
 pub fn random_in_unit_sphere() -> Point3<f64> {
@@ -12,6 +12,10 @@ pub fn random_in_unit_sphere() -> Point3<f64> {
     Point3::unit_vector(p) * u.cbrt()
 }
 
+pub fn random_unit_vector() -> Vec3<f64> {
+    Vec3::unit_vector(random_in_unit_sphere())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -23,5 +27,11 @@ mod tests {
         assert!(range.contains(&p.x));
         assert!(range.contains(&p.y));
         assert!(range.contains(&p.z));
+    }
+
+    #[test]
+    fn test_random_unit_vector_is_unit_vector() {
+        let v = random_unit_vector();
+        assert_eq!(v.length(), 1.0);
     }
 }
