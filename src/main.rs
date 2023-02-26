@@ -4,7 +4,7 @@ use rand::Rng;
 use raytracer::objects::hittable::{HitRecord, Hittable, HittableList};
 use raytracer::objects::{Camera, Sphere};
 use raytracer::ray::Ray;
-use raytracer::vec3::utils::random_in_unit_sphere;
+use raytracer::vec3::utils::{random_in_unit_sphere, random_unit_vector};
 use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
@@ -19,7 +19,7 @@ fn color(r: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
 
     // t_min 0.001 to ignore hits very near to 0 to avoid shadow acne
     if world.hit(r, 0.001, f64::INFINITY, &mut rec) {
-        let target = rec.p + rec.normal + random_in_unit_sphere();
+        let target = rec.p + rec.normal + random_unit_vector();
         return color(&Ray::new(rec.p, target - rec.p), world, depth - 1) * 0.5;
     }
 
