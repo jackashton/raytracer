@@ -16,6 +16,15 @@ pub fn random_unit_vector() -> Vec3<f64> {
     Vec3::unit_vector(random_in_unit_sphere())
 }
 
+pub fn random_in_hemisphere(normal: &Vec3<f64>) -> Vec3<f64> {
+    let in_unit_sphere: Vec3<f64> = random_in_unit_sphere();
+    if Vec3::dot(&in_unit_sphere, &normal) > 0.0 {
+        in_unit_sphere
+    } else {
+        -in_unit_sphere
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
