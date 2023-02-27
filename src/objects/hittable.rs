@@ -5,22 +5,12 @@ use crate::vec3::{Point3, Vec3};
 pub struct HitRecord {
     pub p: Point3<f64>,
     pub normal: Vec3<f64>,
+    // pub material: &'a dyn Material,
     pub t: f64,
 }
 
-impl HitRecord {
-    pub fn new() -> HitRecord {
-        let v = Vec3::new(0.0, 0.0, 0.0);
-        HitRecord {
-            p: v,
-            normal: v,
-            t: 0.0,
-        }
-    }
-}
-
 pub trait Hittable {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool;
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
 pub struct HittableList<T: ?Sized + Hittable> {
@@ -45,19 +35,14 @@ impl<T: ?Sized + Hittable> HittableList<T> {
 }
 
 impl<T: ?Sized + Hittable> Hittable for HittableList<T> {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
-        let mut temp = HitRecord::new();
-        let mut hit = false;
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        let mut hit: Option<HitRecord> = None;
         let mut closest = t_max;
 
         for object in &self.objects {
-            if object.hit(r, t_min, closest, &mut temp) {
-                hit = true;
+            if let Some(temp) = object.hit(r, t_min, closest) {
                 closest = temp.t;
-                // TODO fix this so we can do rec = temp or similar
-                rec.p = temp.p;
-                rec.t = temp.t;
-                rec.normal = temp.normal;
+                hit = Some(temp);
             }
         }
         hit
