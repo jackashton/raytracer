@@ -54,6 +54,13 @@ impl<N: Float> Vec3<N> {
     }
 }
 
+impl Vec3<f64> {
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        (self.x.abs() < s) && (self.y.abs() < s) && (self.z.abs() < s)
+    }
+}
+
 impl<N: Num> Add for Vec3<N> {
     type Output = Self;
 
