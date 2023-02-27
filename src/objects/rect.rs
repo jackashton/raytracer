@@ -14,7 +14,7 @@ impl Rect {
 }
 
 impl Hittable for Rect {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut t_min = t_min;
         let mut t_max = t_max;
 
@@ -34,20 +34,21 @@ impl Hittable for Rect {
             t_min = f64::max(t0, t_min);
             t_max = f64::min(t1, t_max);
             if t_max <= t_min {
-                return false;
+                return None;
             }
         }
 
-        rec.t = t_min;
-        rec.p = r.at(rec.t);
-        rec.normal = rec.p;
-        if Vec3::dot(&r.dir, &rec.normal).is_sign_positive() {
-            rec.normal = -rec.normal;
+        let t = t_min;
+        let p = r.at(t);
+        let mut normal = p;
+        if Vec3::dot(&r.dir, &normal).is_sign_positive() {
+            normal = -normal;
         }
-        true
+        Some(HitRecord { t, p, normal })
     }
 }
 
+// TODO better tests
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -61,7 +62,6 @@ mod tests {
         );
         let origin = Point3::new(0.0, 0.0, 0.0);
         let ray = Ray::new(origin, center);
-        let mut rec = HitRecord::new();
-        assert!(rect.hit(&ray, 0.0, f64::INFINITY, &mut rec))
+        assert!(rect.hit(&ray, 0.0, f64::INFINITY).is_some())
     }
 }
