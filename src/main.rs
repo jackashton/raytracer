@@ -71,8 +71,8 @@ fn main() {
 
     let material_ground = Lambertian::new(Vec3::new(0.8, 0.8, 0.0));
     let material_center = Lambertian::new(Vec3::new(0.7, 0.3, 0.3));
-    let material_left = Metal::new(Vec3::new(0.8, 0.8, 0.8));
-    let material_right = Metal::new(Vec3::new(0.8, 0.6, 0.2));
+    let material_left = Metal::new(Vec3::new(0.8, 0.8, 0.8), 0.3);
+    let material_right = Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.3);
 
     world.push(Box::new(Sphere::new(
         Point3::new(0.0, -100.5, -1.0),
