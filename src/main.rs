@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
-use raytracer::material::{Lambertian, Metal};
+use raytracer::material::{Dielectric, Lambertian, Metal};
 use raytracer::objects::hittable::{Hittable, HittableList};
 use raytracer::objects::{Camera, Sphere};
 use raytracer::ray::Ray;
@@ -70,9 +70,9 @@ fn main() {
     let mut world: HittableList<dyn Hittable> = HittableList::new();
 
     let material_ground = Lambertian::new(Vec3::new(0.8, 0.8, 0.0));
-    let material_center = Lambertian::new(Vec3::new(0.7, 0.3, 0.3));
-    let material_left = Metal::new(Vec3::new(0.8, 0.8, 0.8), 0.3);
-    let material_right = Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.3);
+    let material_center = Dielectric::new(1.5);
+    let material_left = Dielectric::new(1.5);
+    let material_right = Metal::new(Vec3::new(0.8, 0.6, 0.2), 1.0);
 
     world.push(Box::new(Sphere::new(
         Point3::new(0.0, -100.5, -1.0),
