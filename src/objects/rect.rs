@@ -43,13 +43,16 @@ impl<M: Material> Hittable for Rect<M> {
         let t = t_min;
         let p = r.at(t);
         let mut normal = p;
+        let mut front_face = true;
         if Vec3::dot(&r.dir, &normal).is_sign_positive() {
             normal = -normal;
+            front_face = false;
         }
         Some(HitRecord {
             t,
             p,
             normal,
+            front_face,
             material: &self.material,
         })
     }

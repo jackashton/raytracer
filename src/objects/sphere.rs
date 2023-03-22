@@ -33,9 +33,9 @@ impl<M: Material> Hittable for Sphere<M> {
         let sqrtd = discriminant.sqrt();
 
         // Find the nearest root that lies in the acceptable range.
-        let root = (-h - sqrtd) / a;
+        let mut root = (-h - sqrtd) / a;
         if root < t_min || t_max < root {
-            let root = (-h + sqrtd) / a;
+            root = (-h + sqrtd) / a;
             if root < t_min || t_max < root {
                 return None;
             }
@@ -45,13 +45,16 @@ impl<M: Material> Hittable for Sphere<M> {
         let p = r.at(t);
         // normal always points against the incident ray
         let mut normal = (p - self.center) / self.radius;
+        let mut front_face = true;
         if Vec3::dot(&r.dir, &normal).is_sign_positive() {
             normal = -normal;
+            front_face = false;
         }
         Some(HitRecord {
             t,
             p,
             normal,
+            front_face,
             material: &self.material,
         })
     }
