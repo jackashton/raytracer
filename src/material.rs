@@ -17,7 +17,7 @@ fn refract(v: &Vec3<f64>, n: &Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
 }
 
 pub trait Material {
-    fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3<f64>)>;
+    fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3<f64>)>;
 }
 
 pub struct Lambertian {
@@ -31,13 +31,13 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, _ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3<f64>)> {
-        let mut target = rec.normal + random_unit_vector();
+    fn scatter(&self, _ray_in: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3<f64>)> {
+        let mut target = hit.normal + random_unit_vector();
         // TODO maybe remove this it seems to make little to no difference
         if target.near_zero() {
-            target = rec.normal;
+            target = hit.normal;
         }
-        let scattered = Ray::new(rec.p, target);
+        let scattered = Ray::new(hit.point, target);
         Some((scattered, self.albedo))
     }
 }
@@ -59,7 +59,7 @@ impl Metal {
 impl Material for Metal {
     fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3<f64>)> {
         let reflected = reflect(&ray_in.dir.normalize(), &rec.normal);
-        let scattered = Ray::new(rec.p, reflected + random_in_unit_sphere() * self.fuzz);
+        let scattered = Ray::new(rec.point, reflected + random_in_unit_sphere() * self.fuzz);
         if Vec3::dot(&scattered.dir, &rec.normal) > 0.0 {
             Some((scattered, self.albedo))
         } else {
@@ -86,6 +86,6 @@ impl Material for Dielectric {
             self.refraction_index
         };
         let refracted = refract(&ray_in.dir, &rec.normal, refraction_ratio);
-        Some((Ray::new(rec.p, refracted), Vec3::new(1.0, 1.0, 1.0)))
+        Some((Ray::new(rec.point, refracted), Vec3::new(1.0, 1.0, 1.0)))
     }
 }

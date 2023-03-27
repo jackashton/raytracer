@@ -9,16 +9,16 @@ use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
 
-fn color(r: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
+fn color(ray_in: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
     // stop when we exceed the max ray bounce limit
     if depth <= 0 {
         return Vec3::zero();
     }
 
     // t_min 0.001 to ignore hits very near to 0 to avoid shadow acne
-    match world.hit(r, 0.001, f64::INFINITY) {
-        Some(rec) => {
-            return match rec.material.scatter(r, &rec) {
+    match world.hit(ray_in, 0.001, f64::INFINITY) {
+        Some(hit) => {
+            return match hit.material.scatter(ray_in, &hit) {
                 Some((scattered, attenuation)) => {
                     attenuation * color(&scattered, world, depth - 1) * 0.5
                 }
@@ -28,7 +28,7 @@ fn color(r: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
         _ => {}
     }
 
-    let unit_direction = r.dir.normalize();
+    let unit_direction = ray_in.dir.normalize();
     let t = 0.5 * (unit_direction.y + 1.0);
     Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + (Vec3::new(0.5, 0.7, 1.0) * t)
 }
@@ -122,8 +122,8 @@ fn main() {
                         };
                         let u = ((i as f64) + u_ran) / (image_width as f64 - 1.0);
                         let v = ((j as f64) + v_ran) / (image_height as f64 - 1.0);
-                        let r = cam.get_ray(u, v);
-                        pixel_color += color(&r, &world, max_depth);
+                        let ray = cam.get_ray(u, v);
+                        pixel_color += color(&ray, &world, max_depth);
                     }
                     // divide color by number of samples per pixel and gamma correct for gamma 2
                     let scale = 1.0 / (samples_per_pixel as f64);

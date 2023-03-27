@@ -50,7 +50,7 @@ impl<M: Material> Hittable for Rect<M> {
         }
         Some(HitRecord {
             t,
-            p,
+            point: p,
             normal,
             front_face,
             material: &self.material,
