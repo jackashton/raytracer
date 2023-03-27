@@ -16,14 +16,14 @@ impl<M: Material> Rect<M> {
 }
 
 impl<M: Material> Hittable for Rect<M> {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut t_min = t_min;
         let mut t_max = t_max;
 
-        let inv_d = <[f64; 3]>::from(Vec3::new(1.0 / r.dir.x, 1.0 / r.dir.y, 1.0 / r.dir.z));
+        let inv_d = <[f64; 3]>::from(Vec3::new(1.0, 1.0, 1.0) / ray.dir);
         let va = <[f64; 3]>::from(self.a);
         let vb = <[f64; 3]>::from(self.b);
-        let o = <[f64; 3]>::from(r.orig);
+        let o = <[f64; 3]>::from(ray.orig);
         let mut t0: f64;
         let mut t1: f64;
 
@@ -41,16 +41,16 @@ impl<M: Material> Hittable for Rect<M> {
         }
 
         let t = t_min;
-        let p = r.at(t);
-        let mut normal = p;
+        let point = ray.at(t);
+        let mut normal = point;
         let mut front_face = true;
-        if Vec3::dot(&r.dir, &normal).is_sign_positive() {
+        if ray.dir.dot(&normal).is_sign_positive() {
             normal = -normal;
             front_face = false;
         }
         Some(HitRecord {
             t,
-            point: p,
+            point,
             normal,
             front_face,
             material: &self.material,
