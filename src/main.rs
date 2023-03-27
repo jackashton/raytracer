@@ -113,7 +113,7 @@ fn main() {
             let col = (0..image_height)
                 .rev()
                 .map(|j| {
-                    let mut pixel_color = Vec3::new(0.0, 0.0, 0.0);
+                    let mut pixel_color = Vec3::zero();
                     for _s in 0..samples_per_pixel {
                         let (u_ran, v_ran) = if is_antialiasing_enabled {
                             (rng.gen(), rng.gen())

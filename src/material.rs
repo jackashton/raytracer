@@ -51,7 +51,7 @@ impl Metal {
     pub fn new(albedo: Vec3<f64>, fuzz: f64) -> Self {
         Self {
             albedo,
-            fuzz: if fuzz < 1.0 { fuzz } else { 1.0 },
+            fuzz: fuzz.min(1.0),
         }
     }
 }
