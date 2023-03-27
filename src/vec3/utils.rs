@@ -9,11 +9,11 @@ pub fn random_in_unit_sphere() -> Point3<f64> {
         rng.gen_range(-1.0..1.0),
         rng.gen_range(-1.0..1.0),
     );
-    Point3::unit_vector(p) * u.cbrt()
+    p.normalize() * u.cbrt()
 }
 
 pub fn random_unit_vector() -> Vec3<f64> {
-    Vec3::unit_vector(random_in_unit_sphere())
+    random_in_unit_sphere().normalize()
 }
 
 pub fn random_in_hemisphere(normal: &Vec3<f64>) -> Vec3<f64> {

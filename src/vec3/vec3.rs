@@ -10,25 +10,32 @@ pub struct Vec3<N: Num> {
 }
 
 impl<N: Num + Copy> Vec3<N> {
-    pub fn new(x: N, y: N, z: N) -> Vec3<N> {
-        Vec3 { x, y, z }
+    pub fn new(x: N, y: N, z: N) -> Self {
+        Self { x, y, z }
     }
 
-    pub fn dot(u: &Vec3<N>, v: &Vec3<N>) -> N {
-        (u.x * v.x) + (u.y * v.y) + (u.z * v.z)
-    }
-
-    pub fn cross(u: &Vec3<N>, v: &Vec3<N>) -> Vec3<N> {
-        Vec3 {
-            x: (u.y * v.z) - (u.z * v.y),
-            y: (u.z * v.x) - (u.x * v.z),
-            z: (u.x * v.y) - (u.y * v.x),
+    pub fn zero() -> Self {
+        Self {
+            x: N::zero(),
+            y: N::zero(),
+            z: N::zero(),
         }
+    }
+
+    pub fn dot(&self, other: &Vec3<N>) -> N {
+        (self.x * other.x) + (self.y * other.y) + (self.z * other.z)
+    }
+
+    pub fn cross(&mut self, other: &Vec3<N>) -> Self {
+        self.x = (self.y * other.z) - (self.z * other.y);
+        self.y = (self.z * other.x) - (self.x * other.z);
+        self.z = (self.x * other.y) - (self.y * other.x);
+        *self
     }
 }
 
 impl<N: Num + Copy + PartialOrd> Vec3<N> {
-    pub fn clamp(&mut self, min: N, max: N) -> Vec3<N> {
+    pub fn clamp(&mut self, min: N, max: N) -> Self {
         self.x = clamp(self.x, min, max);
         self.y = clamp(self.y, min, max);
         self.z = clamp(self.z, min, max);
@@ -41,16 +48,15 @@ impl<N: Float> Vec3<N> {
         ((self.x * self.x) + (self.y * self.y) + (self.z * self.z)).sqrt()
     }
 
-    pub fn unit_vector(v: Vec3<N>) -> Vec3<N> {
-        v / v.length()
+    pub fn normalize(&self) -> Self {
+        *self / self.length()
     }
 
-    pub fn sqrt(&self) -> Vec3<N> {
-        Vec3 {
-            x: self.x.sqrt(),
-            y: self.y.sqrt(),
-            z: self.z.sqrt(),
-        }
+    pub fn sqrt(&mut self) -> Self {
+        self.x = self.x.sqrt();
+        self.y = self.y.sqrt();
+        self.z = self.z.sqrt();
+        *self
     }
 }
 
@@ -299,14 +305,14 @@ mod tests {
         let vec1: Vec3<f64> = Vec3::new(1.0, 3.0, 4.0);
         let vec2: Vec3<f64> = Vec3::new(2.0, 3.0, 5.0);
         let res: f64 = 31.0;
-        assert_eq!(Vec3::dot(&vec1, &vec2), res);
+        assert_eq!(vec1.dot(&vec2), res);
     }
 
     #[test]
     fn test_cross() {
-        let vec1: Vec3<i32> = Vec3::new(1, 3, 4);
+        let mut vec1: Vec3<i32> = Vec3::new(1, 3, 4);
         let vec2: Vec3<i32> = Vec3::new(2, 3, 5);
         let res: Vec3<i32> = Vec3::new(3, 3, -3);
-        assert_eq!(Vec3::cross(&vec1, &vec2), res);
+        assert_eq!(vec1.cross(&vec2), res);
     }
 }
