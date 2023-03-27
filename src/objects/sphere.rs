@@ -52,7 +52,7 @@ impl<M: Material> Hittable for Sphere<M> {
         }
         Some(HitRecord {
             t,
-            p,
+            point: p,
             normal,
             front_face,
             material: &self.material,
