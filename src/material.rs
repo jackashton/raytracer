@@ -8,7 +8,7 @@ fn reflect(v: &Vec3<f64>, n: &Vec3<f64>) -> Vec3<f64> {
 }
 
 fn refract(v: &Vec3<f64>, n: &Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
-    let uv = Vec3::unit_vector(*v);
+    let uv = v.normalize();
     // annoying since min can't be used
     let cos_theta = Vec3::dot(&(-uv), n).min(1.0);
     let r_out_perp = (uv + (*n * cos_theta)) * refraction_ratio;
@@ -26,7 +26,7 @@ pub struct Lambertian {
 
 impl Lambertian {
     pub fn new(albedo: Vec3<f64>) -> Self {
-        Lambertian { albedo }
+        Self { albedo }
     }
 }
 
@@ -49,7 +49,7 @@ pub struct Metal {
 
 impl Metal {
     pub fn new(albedo: Vec3<f64>, fuzz: f64) -> Self {
-        Metal {
+        Self {
             albedo,
             fuzz: if fuzz < 1.0 { fuzz } else { 1.0 },
         }
@@ -58,7 +58,7 @@ impl Metal {
 
 impl Material for Metal {
     fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3<f64>)> {
-        let reflected = reflect(&Vec3::unit_vector(ray_in.dir), &rec.normal);
+        let reflected = reflect(&ray_in.dir.normalize(), &rec.normal);
         let scattered = Ray::new(rec.p, reflected + random_in_unit_sphere() * self.fuzz);
         if Vec3::dot(&scattered.dir, &rec.normal) > 0.0 {
             Some((scattered, self.albedo))

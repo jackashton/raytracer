@@ -12,7 +12,7 @@ use std::env;
 fn color(r: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
     // stop when we exceed the max ray bounce limit
     if depth <= 0 {
-        return Vec3::new(0.0, 0.0, 0.0);
+        return Vec3::zero();
     }
 
     // t_min 0.001 to ignore hits very near to 0 to avoid shadow acne
@@ -22,13 +22,13 @@ fn color(r: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
                 Some((scattered, attenuation)) => {
                     attenuation * color(&scattered, world, depth - 1) * 0.5
                 }
-                _ => Vec3::new(0.0, 0.0, 0.0),
+                _ => Vec3::zero(),
             }
         }
         _ => {}
     }
 
-    let unit_direction = Vec3::unit_vector(r.dir);
+    let unit_direction = r.dir.normalize();
     let t = 0.5 * (unit_direction.y + 1.0);
     Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + (Vec3::new(0.5, 0.7, 1.0) * t)
 }
