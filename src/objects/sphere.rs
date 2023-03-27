@@ -1,7 +1,7 @@
 use crate::material::Material;
 use crate::objects::hittable::{HitRecord, Hittable};
 use crate::ray::Ray;
-use crate::vec3::{Point3, Vec3};
+use crate::vec3::Point3;
 
 pub struct Sphere<M: Material> {
     center: Point3<f64>,
@@ -20,10 +20,10 @@ impl<M: Material> Sphere<M> {
 }
 
 impl<M: Material> Hittable for Sphere<M> {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        let oc = r.orig - self.center;
-        let a = r.dir.length() * r.dir.length();
-        let h = Vec3::dot(&oc, &r.dir);
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        let oc = ray.orig - self.center;
+        let a = ray.dir.length() * ray.dir.length();
+        let h = oc.dot(&ray.dir);
         let c = oc.length() * oc.length() - self.radius * self.radius;
 
         let discriminant = h * h - a * c;
@@ -42,17 +42,17 @@ impl<M: Material> Hittable for Sphere<M> {
         }
 
         let t = root;
-        let p = r.at(t);
+        let point = ray.at(t);
         // normal always points against the incident ray
-        let mut normal = (p - self.center) / self.radius;
+        let mut normal = (point - self.center) / self.radius;
         let mut front_face = true;
-        if Vec3::dot(&r.dir, &normal).is_sign_positive() {
+        if ray.dir.dot(&normal).is_sign_positive() {
             normal = -normal;
             front_face = false;
         }
         Some(HitRecord {
             t,
-            point: p,
+            point,
             normal,
             front_face,
             material: &self.material,

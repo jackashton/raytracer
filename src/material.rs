@@ -3,16 +3,16 @@ use crate::ray::Ray;
 use crate::vec3::utils::{random_in_unit_sphere, random_unit_vector};
 use crate::vec3::Vec3;
 
-fn reflect(v: &Vec3<f64>, n: &Vec3<f64>) -> Vec3<f64> {
-    *n * (*v - 2.0) * Vec3::dot(v, n)
+fn reflect(v: Vec3<f64>, n: Vec3<f64>) -> Vec3<f64> {
+    n * (v - 2.0) * v.dot(&n)
 }
 
-fn refract(v: &Vec3<f64>, n: &Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
+fn refract(v: Vec3<f64>, n: Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
     let uv = v.normalize();
     // annoying since min can't be used
-    let cos_theta = Vec3::dot(&(-uv), n).min(1.0);
-    let r_out_perp = (uv + (*n * cos_theta)) * refraction_ratio;
-    let r_out_parallel = *n * -(1.0 - (r_out_perp.length().powi(2))).abs().sqrt();
+    let cos_theta = -uv.dot(&n).min(1.0);
+    let r_out_perp = (uv + (n * cos_theta)) * refraction_ratio;
+    let r_out_parallel = n * -(1.0 - (r_out_perp.length().powi(2))).abs().sqrt();
     r_out_perp + r_out_parallel
 }
 
@@ -58,9 +58,9 @@ impl Metal {
 
 impl Material for Metal {
     fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3<f64>)> {
-        let reflected = reflect(&ray_in.dir.normalize(), &rec.normal);
+        let reflected = reflect(ray_in.dir.normalize(), rec.normal);
         let scattered = Ray::new(rec.point, reflected + random_in_unit_sphere() * self.fuzz);
-        if Vec3::dot(&scattered.dir, &rec.normal) > 0.0 {
+        if scattered.dir.dot(&rec.normal) > 0.0 {
             Some((scattered, self.albedo))
         } else {
             None
@@ -85,7 +85,7 @@ impl Material for Dielectric {
         } else {
             self.refraction_index
         };
-        let refracted = refract(&ray_in.dir, &rec.normal, refraction_ratio);
+        let refracted = refract(ray_in.dir, rec.normal, refraction_ratio);
         Some((Ray::new(rec.point, refracted), Vec3::new(1.0, 1.0, 1.0)))
     }
 }
