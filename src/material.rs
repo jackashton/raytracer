@@ -7,8 +7,7 @@ fn reflect(v: Vec3<f64>, n: Vec3<f64>) -> Vec3<f64> {
     n * (v - 2.0) * v.dot(&n)
 }
 
-fn refract(v: Vec3<f64>, n: Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
-    let uv = v.normalize();
+fn refract(uv: Vec3<f64>, n: Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
     // annoying since min can't be used
     let cos_theta = -uv.dot(&n).min(1.0);
     let r_out_perp = (uv + (n * cos_theta)) * refraction_ratio;
@@ -85,7 +84,18 @@ impl Material for Dielectric {
         } else {
             self.refraction_index
         };
-        let refracted = refract(ray_in.dir, rec.normal, refraction_ratio);
-        Some((Ray::new(rec.point, refracted), Vec3::new(1.0, 1.0, 1.0)))
+
+        let unit_direction = ray_in.dir.normalize();
+        let cos_theta = -unit_direction.dot(&rec.normal).min(1.0);
+        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+        let cannot_refract = refraction_ratio * sin_theta > 1.0;
+
+        let direction = if cannot_refract {
+            reflect(unit_direction, rec.normal)
+        } else {
+            refract(unit_direction, rec.normal, refraction_ratio)
+        };
+
+        Some((Ray::new(rec.point, direction), Vec3::new(1.0, 1.0, 1.0)))
     }
 }
