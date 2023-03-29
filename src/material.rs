@@ -5,7 +5,7 @@ use crate::vec3::Vec3;
 use rand::Rng;
 
 fn reflect(v: Vec3<f64>, n: Vec3<f64>) -> Vec3<f64> {
-    n * (v - 2.0) * v.dot(&n)
+    v - (n * v.dot(&n) * 2.0)
 }
 
 fn refract(uv: Vec3<f64>, n: Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
