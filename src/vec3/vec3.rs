@@ -58,6 +58,13 @@ impl<N: Float> Vec3<N> {
         self.z = self.z.sqrt();
         *self
     }
+
+    pub fn cbrt(&mut self) -> Self {
+        self.x = self.x.cbrt();
+        self.y = self.y.cbrt();
+        self.z = self.z.cbrt();
+        *self
+    }
 }
 
 impl Vec3<f64> {
