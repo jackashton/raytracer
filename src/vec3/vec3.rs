@@ -27,10 +27,11 @@ impl<N: Num + Copy> Vec3<N> {
     }
 
     pub fn cross(&mut self, other: &Vec3<N>) -> Self {
-        self.x = (self.y * other.z) - (self.z * other.y);
-        self.y = (self.z * other.x) - (self.x * other.z);
-        self.z = (self.x * other.y) - (self.y * other.x);
-        *self
+        Self {
+            x: (self.y * other.z) - (self.z * other.y),
+            y: (self.z * other.x) - (self.x * other.z),
+            z: (self.x * other.y) - (self.y * other.x),
+        }
     }
 }
 
@@ -304,7 +305,7 @@ mod tests {
     fn test_unit_vector() {
         let vec1: Vec3<f64> = Vec3::new(0.0, 3.0, 4.0);
         let res: Vec3<f64> = Vec3::new(0.0, 3.0 / 5.0, 4.0 / 5.0);
-        assert_eq!(Vec3::unit_vector(vec1), res);
+        assert_eq!(vec1.normalize(), res);
     }
 
     #[test]

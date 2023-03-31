@@ -58,20 +58,22 @@ impl<M: Material> Hittable for Rect<M> {
     }
 }
 
-// TODO better tests
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::material::Lambertian;
 
-    // #[test]
-    // fn test_hit() {
-    //     let center = Point3::new(0.0, 0.0, -1.0);
-    //     let rect = Rect::new(
-    //         center - Point3::new(0.5, 0.5, 0.1),
-    //         center + Point3::new(0.5, 0.5, 0.0),
-    //     );
-    //     let origin = Point3::new(0.0, 0.0, 0.0);
-    //     let ray = Ray::new(origin, center);
-    //     assert!(rect.hit(&ray, 0.0, f64::INFINITY).is_some())
-    // }
+    #[test]
+    fn test_hit() {
+        let center = Point3::new(0.0, 0.0, -1.0);
+        let material = Lambertian::new(Vec3::zero());
+        let rect = Rect::new(
+            center - Point3::new(0.5, 0.5, 0.1),
+            center + Point3::new(0.5, 0.5, 0.0),
+            material,
+        );
+        let origin = Point3::new(0.0, 0.0, 0.0);
+        let ray = Ray::new(origin, center);
+        assert!(rect.hit(&ray, 0.0, f64::INFINITY).is_some())
+    }
 }
