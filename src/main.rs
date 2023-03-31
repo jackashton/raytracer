@@ -96,7 +96,7 @@ fn main() {
     )));
 
     // Camera
-    let cam = Camera::new();
+    let cam = Camera::new(90.0, 16.0 / 19.0);
 
     // Misc
     let mut rng = rand::thread_rng();
