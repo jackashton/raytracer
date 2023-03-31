@@ -43,4 +43,18 @@ mod tests {
         let v = random_unit_vector();
         assert_eq!(v.length(), 1.0);
     }
+
+    #[test]
+    fn test_random_in_hemisphere_with_positive_dot_product() {
+        let normal = Vec3::new(0.0, 1.0, 0.0);
+        let v = random_in_hemisphere(&normal);
+        assert!(v.y > 0.0);
+    }
+
+    #[test]
+    fn test_random_in_hemisphere_with_negative_dot_product() {
+        let normal = Vec3::new(0.0, -1.0, 0.0);
+        let v = random_in_hemisphere(&normal);
+        assert!(v.y < 0.0);
+    }
 }

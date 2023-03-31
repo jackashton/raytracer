@@ -60,17 +60,19 @@ impl<M: Material> Hittable for Sphere<M> {
     }
 }
 
-// TODO better tests
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::material::Lambertian;
+    use crate::vec3::Vec3;
 
-    // #[test]
-    // fn test_hit() {
-    //     let center = Point3::new(0.0, 0.0, -1.0);
-    //     let sphere = Sphere::new(center, 0.5);
-    //     let origin = Point3::new(0.0, 0.0, 0.0);
-    //     let ray = Ray::new(origin, center);
-    //     assert!(sphere.hit(&ray, 0.0, f64::INFINITY).is_some())
-    // }
+    #[test]
+    fn test_hit() {
+        let center = Point3::new(0.0, 0.0, -1.0);
+        let material = Lambertian::new(Vec3::zero());
+        let sphere = Sphere::new(center, 0.5, material);
+        let origin = Point3::new(0.0, 0.0, 0.0);
+        let ray = Ray::new(origin, center);
+        assert!(sphere.hit(&ray, 0.0, f64::INFINITY).is_some())
+    }
 }
