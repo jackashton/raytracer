@@ -10,7 +10,7 @@ fn reflect(v: Vec3<f64>, n: Vec3<f64>) -> Vec3<f64> {
 
 fn refract(uv: Vec3<f64>, n: Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
     // annoying since min can't be used
-    let cos_theta = -uv.dot(&n).min(1.0);
+    let cos_theta = (-uv).dot(&n).min(1.0);
     let r_out_perp = (uv + (n * cos_theta)) * refraction_ratio;
     let r_out_parallel = n * -(1.0 - (r_out_perp.length().powi(2))).abs().sqrt();
     r_out_perp + r_out_parallel
@@ -93,7 +93,7 @@ impl Material for Dielectric {
         };
 
         let unit_direction = ray_in.dir.normalize();
-        let cos_theta = -unit_direction.dot(&rec.normal).min(1.0);
+        let cos_theta = (-unit_direction).dot(&rec.normal).min(1.0);
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
         let cannot_refract = refraction_ratio * sin_theta > 1.0;
 

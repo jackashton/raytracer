@@ -1,5 +1,5 @@
 use crate::utils::clamp;
-use num_traits::{AsPrimitive, Float, Num};
+use num_traits::{AsPrimitive, Float, Num, Signed};
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub};
 
 #[derive(Debug, Copy, Clone)]
@@ -79,6 +79,14 @@ impl Vec3<f64> {
     pub fn near_zero(&self) -> bool {
         let s = 1e-8;
         (self.x.abs() < s) && (self.y.abs() < s) && (self.z.abs() < s)
+    }
+}
+
+impl<N: Num + Copy + Signed> Neg for Vec3<N> {
+    type Output = Self;
+
+    fn neg(self) -> Self {
+        Vec3::new(-self.x, -self.y, -self.z)
     }
 }
 
@@ -231,18 +239,6 @@ impl<T: Num + Copy + 'static> Vec3<T> {
     }
 }
 
-impl<N: Float> Neg for Vec3<N> {
-    type Output = Self;
-
-    fn neg(self) -> Self::Output {
-        Vec3 {
-            x: -self.x,
-            y: -self.y,
-            z: -self.z,
-        }
-    }
-}
-
 pub type Color = Vec3<u8>;
 
 pub type Point3<N> = Vec3<N>;
@@ -325,9 +321,15 @@ mod tests {
 
     #[test]
     fn test_cross() {
-        let mut vec1: Vec3<i32> = Vec3::new(1, 3, 4);
+        let vec1: Vec3<i32> = Vec3::new(1, 3, 4);
         let vec2: Vec3<i32> = Vec3::new(2, 3, 5);
         let res: Vec3<i32> = Vec3::new(3, 3, -3);
         assert_eq!(vec1.cross(&vec2), res);
+    }
+
+    #[test]
+    fn test_neg() {
+        let vec = Vec3::new(1, 3, 4);
+        assert_eq!(-vec, (vec * -1));
     }
 }
