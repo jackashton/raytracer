@@ -90,13 +90,24 @@ fn main() {
         material_left,
     )));
     world.push(Box::new(Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        -0.45,
+        material_left,
+    )));
+    world.push(Box::new(Sphere::new(
         Point3::new(1.0, 0.0, -1.0),
         0.5,
         material_right,
     )));
 
     // Camera
-    let cam = Camera::new(90.0, 16.0 / 19.0);
+    let cam = Camera::new(
+        Point3::new(-2.0, 2.0, 1.0),
+        Point3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        20.0,
+        16.0 / 9.0,
+    );
 
     // Misc
     let mut rng = rand::thread_rng();
