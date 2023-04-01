@@ -66,6 +66,13 @@ impl<N: Float> Vec3<N> {
         self.z = self.z.cbrt();
         *self
     }
+
+    pub fn powf(&mut self, n: N) -> Self {
+        self.x = self.x.powf(n);
+        self.y = self.y.powf(n);
+        self.z = self.z.powf(n);
+        *self
+    }
 }
 
 impl Vec3<f64> {
