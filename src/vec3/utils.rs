@@ -1,5 +1,6 @@
 use crate::vec3::{Point3, Vec3};
 use rand::Rng;
+use std::f64::consts::PI;
 
 pub fn random_in_unit_sphere() -> Point3<f64> {
     let mut rng = rand::thread_rng();
@@ -22,6 +23,17 @@ pub fn random_in_hemisphere(normal: &Vec3<f64>) -> Vec3<f64> {
         in_unit_sphere
     } else {
         -in_unit_sphere
+    }
+}
+
+pub fn random_in_unit_disk() -> Point3<f64> {
+    let mut rng = rand::thread_rng();
+    let r = rng.gen_range(0.0..1.0);
+    let theta = rng.gen_range(0.0..2.0 * PI);
+    Point3 {
+        x: r * theta.cos(),
+        y: r * theta.sin(),
+        z: 0.0,
     }
 }
 
@@ -56,5 +68,16 @@ mod tests {
         let normal = Vec3::new(0.0, -1.0, 0.0);
         let v = random_in_hemisphere(&normal);
         assert!(v.y < 0.0);
+    }
+
+    #[test]
+    fn test_random_in_unit_disk() {
+        let point = random_in_unit_disk();
+
+        // Ensure the point is within the unit disk
+        assert!(point.length() < 1.0);
+
+        // Ensure the point is on the xy plane
+        assert_eq!(point.z, 0.0);
     }
 }
