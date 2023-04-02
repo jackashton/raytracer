@@ -19,9 +19,7 @@ fn color(ray_in: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f
     match world.hit(ray_in, 0.001, f64::INFINITY) {
         Some(hit) => {
             return match hit.material.scatter(ray_in, &hit) {
-                Some((scattered, attenuation)) => {
-                    attenuation * color(&scattered, world, depth - 1) * 0.5
-                }
+                Some((scattered, attenuation)) => attenuation * color(&scattered, world, depth - 1),
                 _ => Vec3::zero(),
             }
         }
