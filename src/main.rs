@@ -99,12 +99,16 @@ fn main() {
     )));
 
     // Camera
+    let lookfrom = Point3::new(3.0, 3.0, 2.0);
+    let lookat = Point3::new(0.0, 0.0, -1.0);
     let cam = Camera::new(
-        Point3::new(-2.0, 2.0, 1.0),
-        Point3::new(0.0, 0.0, -1.0),
+        lookfrom,
+        lookat,
         Vec3::new(0.0, 1.0, 0.0),
         20.0,
         16.0 / 9.0,
+        2.0,
+        (lookfrom - lookat).length(),
     );
 
     // Misc
