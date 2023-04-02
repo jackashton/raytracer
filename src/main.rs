@@ -9,6 +9,74 @@ use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
 
+fn random_scene() -> HittableList<dyn Hittable> {
+    let mut rng = rand::thread_rng();
+    let origin = Vec3::new(4.0, 0.2, 0.0);
+    let mut world: HittableList<dyn Hittable> = HittableList::new();
+    world.push(Box::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        1000.0,
+        Lambertian::new(Vec3::new(0.5, 0.5, 0.5)),
+    )));
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_material = rng.gen::<f64>();
+            let center = Point3::new(
+                a as f64 + 0.9 * rng.gen::<f64>(),
+                0.2,
+                b as f64 + 0.9 * rng.gen::<f64>(),
+            );
+            if (center - origin).length() > 0.9 {
+                if choose_material < 0.8 {
+                    // diffuse
+                    world.push(Box::new(Sphere::new(
+                        center,
+                        0.2,
+                        Lambertian::new(Point3::new(
+                            rng.gen::<f64>() * rng.gen::<f64>(),
+                            rng.gen::<f64>() * rng.gen::<f64>(),
+                            rng.gen::<f64>() * rng.gen::<f64>(),
+                        )),
+                    )));
+                } else if choose_material < 0.95 {
+                    // metal
+                    world.push(Box::new(Sphere::new(
+                        center,
+                        0.2,
+                        Metal::new(
+                            Vec3::new(
+                                0.5 * (1.0 + rng.gen::<f64>()),
+                                0.5 * (1.0 + rng.gen::<f64>()),
+                                0.5 * (1.0 + rng.gen::<f64>()),
+                            ),
+                            0.5 * rng.gen::<f64>(),
+                        ),
+                    )));
+                } else {
+                    // glass
+                    world.push(Box::new(Sphere::new(center, 0.2, Dielectric::new(1.5))));
+                }
+            }
+        }
+    }
+    world.push(Box::new(Sphere::new(
+        Vec3::new(0.0, 1.0, 0.0),
+        1.0,
+        Dielectric::new(1.5),
+    )));
+    world.push(Box::new(Sphere::new(
+        Vec3::new(-4.0, 1.0, 0.0),
+        1.0,
+        Lambertian::new(Vec3::new(0.4, 0.2, 0.1)),
+    )));
+    world.push(Box::new(Sphere::new(
+        Vec3::new(4.0, 1.0, 0.0),
+        1.0,
+        Metal::new(Vec3::new(0.7, 0.6, 0.5), 0.0),
+    )));
+    world
+}
+
 fn color(ray_in: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
     // stop when we exceed the max ray bounce limit
     if depth <= 0 {
@@ -55,8 +123,8 @@ fn main() {
     let filename = &args[1];
 
     // Image
-    let aspect_ratio = 16.0 / 9.0;
-    let image_width: u32 = 400;
+    let aspect_ratio = 3.0 / 2.0;
+    let image_width: u32 = 1200;
     let image_height: u32 = (image_width as f64 / aspect_ratio) as u32;
     let samples_per_pixel = if is_antialiasing_enabled {
         antialiasing_samples_per_pixel
@@ -64,55 +132,24 @@ fn main() {
         1
     };
 
+    // Random
+    let mut rng = rand::thread_rng();
+
     // World
-    let mut world: HittableList<dyn Hittable> = HittableList::new();
-
-    let material_ground = Lambertian::new(Vec3::new(0.8, 0.8, 0.0));
-    let material_center = Lambertian::new(Vec3::new(0.1, 0.2, 0.5));
-    let material_left = Dielectric::new(1.5);
-    let material_right = Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.0);
-
-    world.push(Box::new(Sphere::new(
-        Point3::new(0.0, -100.5, -1.0),
-        100.0,
-        material_ground,
-    )));
-    world.push(Box::new(Sphere::new(
-        Point3::new(0.0, 0.0, -1.0),
-        0.5,
-        material_center,
-    )));
-    world.push(Box::new(Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        material_left,
-    )));
-    world.push(Box::new(Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        -0.45,
-        material_left,
-    )));
-    world.push(Box::new(Sphere::new(
-        Point3::new(1.0, 0.0, -1.0),
-        0.5,
-        material_right,
-    )));
+    let world = random_scene();
 
     // Camera
-    let lookfrom = Point3::new(3.0, 3.0, 2.0);
-    let lookat = Point3::new(0.0, 0.0, -1.0);
+    let lookfrom = Point3::new(13.0, 2.0, 3.0);
+    let lookat = Point3::new(0.0, 0.0, 0.0);
     let cam = Camera::new(
         lookfrom,
         lookat,
         Vec3::new(0.0, 1.0, 0.0),
         20.0,
-        16.0 / 9.0,
-        2.0,
-        (lookfrom - lookat).length(),
+        aspect_ratio,
+        0.1,
+        10.0,
     );
-
-    // Misc
-    let mut rng = rand::thread_rng();
 
     // Render
     let bar = ProgressBar::new(image_width as u64);
