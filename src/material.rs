@@ -15,7 +15,7 @@ fn refract(uv: Vec3<f64>, n: Vec3<f64>, refraction_ratio: f64) -> Vec3<f64> {
     r_out_perp + r_out_parallel
 }
 
-pub trait Material {
+pub trait Material: Sync {
     fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3<f64>)>;
 }
 
