@@ -1,6 +1,7 @@
 use dotenv::dotenv;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
+use rayon::prelude::*;
 use raytracer::material::{Dielectric, Lambertian, Metal};
 use raytracer::objects::hittable::{Hittable, HittableList};
 use raytracer::objects::{Camera, Sphere};
@@ -132,9 +133,6 @@ fn main() {
         1
     };
 
-    // Random
-    let mut rng = rand::thread_rng();
-
     // World
     let world = random_scene();
 
@@ -159,7 +157,9 @@ fn main() {
     );
 
     let scene: Vec<Vec<Color>> = (0..image_width)
+        .into_par_iter()
         .map(|i| {
+            let mut rng = rand::thread_rng();
             let col = (0..image_height)
                 .rev()
                 .map(|j| {
