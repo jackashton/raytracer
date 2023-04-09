@@ -73,7 +73,7 @@ mod tests {
             material,
         );
         let origin = Point3::new(0.0, 0.0, 0.0);
-        let ray = Ray::new(origin, center);
+        let ray = Ray::new(origin, center, 0.0);
         assert!(rect.hit(&ray, 0.0, f64::INFINITY).is_some())
     }
 }
