@@ -14,19 +14,19 @@ pub trait Hittable: Sync {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
-pub struct HittableList<T: ?Sized + Hittable> {
-    pub objects: Vec<Box<T>>,
+pub struct HittableList {
+    pub objects: Vec<Box<dyn Hittable>>,
 }
 
-impl<T: ?Sized + Hittable> HittableList<T> {
+impl HittableList {
     pub fn new() -> Self {
         Self {
             objects: Vec::new(),
         }
     }
 
-    pub fn push(&mut self, object: Box<T>) -> &mut Self {
-        self.objects.push(object);
+    pub fn push(&mut self, hittable: impl Hittable + 'static) -> &mut Self {
+        self.objects.push(Box::new(hittable));
         self
     }
 
@@ -35,7 +35,7 @@ impl<T: ?Sized + Hittable> HittableList<T> {
     }
 }
 
-impl<T: ?Sized + Hittable> Hittable for HittableList<T> {
+impl Hittable for HittableList {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut hit: Option<HitRecord> = None;
         let mut closest = t_max;
