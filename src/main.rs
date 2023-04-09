@@ -4,6 +4,7 @@ use rand::Rng;
 use rayon::prelude::*;
 use raytracer::material::{Dielectric, Lambertian, Metal};
 use raytracer::objects::hittable::{Hittable, HittableList};
+use raytracer::objects::sphere::MovingSphere;
 use raytracer::objects::{Camera, Sphere};
 use raytracer::ray::Ray;
 use raytracer::vec3::{Color, Point3, Vec3};
@@ -30,8 +31,11 @@ fn random_scene() -> HittableList {
             if (center - origin).length() > 0.9 {
                 if choose_material < 0.8 {
                     // diffuse
-                    world.push(Sphere::new(
+                    world.push(MovingSphere::new(
                         center,
+                        center + Vec3::new(0.0, rng.gen_range(0.0..0.5), 0.0),
+                        0.0,
+                        1.0,
                         0.2,
                         Lambertian::new(Point3::new(
                             rng.gen::<f64>() * rng.gen::<f64>(),
@@ -124,8 +128,8 @@ fn main() {
     let filename = &args[1];
 
     // Image
-    let aspect_ratio = 3.0 / 2.0;
-    let image_width: u32 = 1200;
+    let aspect_ratio = 16.0 / 9.0;
+    let image_width: u32 = 400;
     let image_height: u32 = (image_width as f64 / aspect_ratio) as u32;
     let samples_per_pixel = if is_antialiasing_enabled {
         antialiasing_samples_per_pixel
@@ -138,7 +142,7 @@ fn main() {
 
     // Camera
     let lookfrom = Point3::new(13.0, 2.0, 3.0);
-    let lookat = Point3::new(0.0, 0.0, 0.0);
+    let lookat = Point3::zero();
     let cam = Camera::new(
         lookfrom,
         lookat,
@@ -147,6 +151,8 @@ fn main() {
         aspect_ratio,
         0.1,
         10.0,
+        0.0,
+        1.0,
     );
 
     // Render
