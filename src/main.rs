@@ -10,15 +10,15 @@ use raytracer::vec3::{Color, Point3, Vec3};
 use raytracer::write::write_image;
 use std::env;
 
-fn random_scene() -> HittableList<dyn Hittable> {
+fn random_scene() -> HittableList {
     let mut rng = rand::thread_rng();
     let origin = Vec3::new(4.0, 0.2, 0.0);
-    let mut world: HittableList<dyn Hittable> = HittableList::new();
-    world.push(Box::new(Sphere::new(
+    let mut world: HittableList = HittableList::new();
+    world.push(Sphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
         Lambertian::new(Vec3::new(0.5, 0.5, 0.5)),
-    )));
+    ));
     for a in -11..11 {
         for b in -11..11 {
             let choose_material = rng.gen::<f64>();
@@ -30,7 +30,7 @@ fn random_scene() -> HittableList<dyn Hittable> {
             if (center - origin).length() > 0.9 {
                 if choose_material < 0.8 {
                     // diffuse
-                    world.push(Box::new(Sphere::new(
+                    world.push(Sphere::new(
                         center,
                         0.2,
                         Lambertian::new(Point3::new(
@@ -38,10 +38,10 @@ fn random_scene() -> HittableList<dyn Hittable> {
                             rng.gen::<f64>() * rng.gen::<f64>(),
                             rng.gen::<f64>() * rng.gen::<f64>(),
                         )),
-                    )));
+                    ));
                 } else if choose_material < 0.95 {
                     // metal
-                    world.push(Box::new(Sphere::new(
+                    world.push(Sphere::new(
                         center,
                         0.2,
                         Metal::new(
@@ -52,33 +52,33 @@ fn random_scene() -> HittableList<dyn Hittable> {
                             ),
                             0.5 * rng.gen::<f64>(),
                         ),
-                    )));
+                    ));
                 } else {
                     // glass
-                    world.push(Box::new(Sphere::new(center, 0.2, Dielectric::new(1.5))));
+                    world.push(Sphere::new(center, 0.2, Dielectric::new(1.5)));
                 }
             }
         }
     }
-    world.push(Box::new(Sphere::new(
+    world.push(Sphere::new(
         Vec3::new(0.0, 1.0, 0.0),
         1.0,
         Dielectric::new(1.5),
-    )));
-    world.push(Box::new(Sphere::new(
+    ));
+    world.push(Sphere::new(
         Vec3::new(-4.0, 1.0, 0.0),
         1.0,
         Lambertian::new(Vec3::new(0.4, 0.2, 0.1)),
-    )));
-    world.push(Box::new(Sphere::new(
+    ));
+    world.push(Sphere::new(
         Vec3::new(4.0, 1.0, 0.0),
         1.0,
         Metal::new(Vec3::new(0.7, 0.6, 0.5), 0.0),
-    )));
+    ));
     world
 }
 
-fn color(ray_in: &Ray, world: &HittableList<dyn Hittable>, depth: u32) -> Vec3<f64> {
+fn color(ray_in: &Ray, world: &HittableList, depth: u32) -> Vec3<f64> {
     // stop when we exceed the max ray bounce limit
     if depth <= 0 {
         return Vec3::zero();
